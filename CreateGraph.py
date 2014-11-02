@@ -4,7 +4,7 @@ import csv
 
 
 def create_edges():
-    rootdir='/Users/dgreenfield/Downloads/yelp_dataset_challenge_academic_dataset_test/'
+    rootdir='/Users/davidgreenfield/Downloads/yelp_dataset_challenge_academic_dataset_test/'
     business_file='yelp_academic_dataset_business.json'
     review_file='yelp_academic_dataset_review.json'
     #review_file='review_sample.json'
