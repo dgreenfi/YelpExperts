@@ -23,20 +23,10 @@ collection = db.reviews
 cursor = collection.find_one()
 print cursor
 
-collection=db.review_starts
-cursor=collection.find_one()
-print collection.find_one()
-quit()
-
-
-cursor=collection.aggregate([{"$sort": { "business_id": 1, "date": 1 }} ,{"$group": {"_id": "$business_id", "first_review":{ "$first": "$date" }}}],allowDiskUse=True)
+cursor=collection.aggregate([{"$sort": { "business_id": 1, "date": 1 }} ,{"$group": {"_id": "$business_id", "firstRev":{ "$first": "$date" }}}],allowDiskUse=True)
 firstdates=cursor['result']
-
-
-collection=db.review_starts
 for start in firstdates:
     print start
-    collection.insert(start)
 
 
 
