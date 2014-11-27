@@ -20,8 +20,6 @@ for review in cursor:
     user_rest.add_edge(userId, restId)
 
 
-print user_rest.number_of_nodes()
-
 hubs = {}
 authorities = {}
 
@@ -31,7 +29,6 @@ hubs,authorities = nx.hits(user_rest,max_iter=1000, tol = 1.0e-3,normalized=Fals
 print "End of HITS",datetime.datetime.now()
 
 sorted_hubs = sorted(hubs.items(), key=operator.itemgetter(1), reverse=True)
-print sorted_hubs
 
 with open('baseline_Hubs.txt','w') as op:
     op.write("Hubs")
@@ -63,8 +60,8 @@ def get_Accuracy():
 
     TP = 0
     FP = 0
-    #Derived_Experts = sorted_auths[1:int((0.1*len(sorted_auths)))][0]
-    Derived_Experts = sorted_auths[0:100]
+    Derived_Experts = sorted_auths[0:int((0.1*len(sorted_auths)))]
+    #Derived_Experts = sorted_auths[0:1000]
     Derived_Experts =[x[0] for x in Derived_Experts]
 
     print Derived_Experts.__len__()
@@ -74,7 +71,7 @@ def get_Accuracy():
     cursor = collection.find().where("if (this.elite.length > 0){return this;}")              # This will hold all elite users
 
     YelpExperts = []
-
+    FalseExperts = []
     for user in cursor:
         YelpExperts.append(user['user_id'])
 
@@ -84,10 +81,24 @@ def get_Accuracy():
             TP += 1
         else:
             FP += 1
+            FalseExperts.append(dExpert)
 
-    print "True positives:",TP
-    print "False positives:",FP
+    # print "True positives:",TP
+    # print "False positives:",FP
     print "Total : ",TP+FP
 
+    print "Accuracy = ", (100.0*TP/(TP+FP))
+
+    with open('10PercentFalseExperts.txt','w') as fe:
+        for exp in FalseExperts:
+            fe.write(exp+"\n")
+
 get_Accuracy()
+
+
+
+
+
+
+
 __author__ = 'karanmatnani'
