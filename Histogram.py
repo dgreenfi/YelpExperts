@@ -14,6 +14,11 @@ f=open(datafile,'r')
 ratings= f.read().splitlines()
 ratings=[float(x) for x in ratings]
 
+datafile='/Users/davidgreenfield/socialfinalproject/variance_time.txt'
+f=open(datafile,'r')
+variances= f.read().splitlines()
+variances=[float(x) for x in variances]
+
 agerate=zip(ages,ratings)
 agerate=sorted(agerate,key=lambda x: x[0])
 
@@ -37,13 +42,16 @@ plt.ylim(1,5)
 plt.title('Average Rating by Age')
 plt.show()
 
-print x
+plt.plot(variances)
+plt.show()
+
+print xchange_stats[week]
 cnts=[x[y] for y in x]
 plt.scatter(range(1,len(cnts)),cnts[1:len(cnts)])
 plt.xlabel('Age after 1st Review')
 plt.ylabel('Count of Reviews')
-plt.ylim(0,2000)
-plt.title('Age vs Quantity of Reviews')
+plt.ylim(-500,2000)
+plt.title('Age vs Quantity of Reviews (Restaurants Only)')
 plt.show()
 
 def age_ave(data):
