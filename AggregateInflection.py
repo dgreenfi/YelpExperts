@@ -30,8 +30,8 @@ plt.title('Age vs Quantity of Reviews (Restaurants Only)')
 plt.show()
 
 
-plt.plot(ages[0:24],fincounts[0:24])
-plt.xlabel('Age of restaurant')
+plt.plot([0]+ages[0:36],[0]+fincounts[0:36])
+plt.xlabel('Age of restaurant (months)')
 plt.ylabel('Avg Count of Reviews')
 plt.title('Age vs Quantity of Reviews (Restaurants Only)')
 plt.show()
