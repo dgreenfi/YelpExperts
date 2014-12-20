@@ -34,7 +34,7 @@ def main():
     f=open(datafile,'r')
     experts_b= f.read().splitlines()
     experts_b= [x.split('\t')[0] for x in experts_b]
-    experts_b=experts_b[0:200]
+    experts_b=experts_b[0:300]
 
 ####### Load accuracy experts
     datafile="/Users/davidgreenfield/socialfinalproject/mongodbApi/accuracy_Authorities.txt"
@@ -42,7 +42,7 @@ def main():
     f=open(datafile,'r')
     experts_a= f.read().splitlines()
     experts_a= [x.split('\t')[0] for x in experts_a]
-    experts_a=experts_a[0:200]
+    experts_a=experts_a[0:300]
 
 
 ######## Core Results  ###########
@@ -60,6 +60,7 @@ def main():
     diffs_e=[]
     diffs_ex_b=[]
     diffs_ex_a=[]
+    diffs_perf=[]
     ests=[]
     actual=[]
     ests_e=[]
@@ -78,25 +79,32 @@ def main():
         #print bus_start,rev_date
 
         if bus_start+timedelta(days=150)>rev_date:
-            if bus_start<datetime.datetime.strptime("2013-01-01", "%Y-%m-%d").date():
+            if bus_start<datetime.datetime.strptime("2014-01-01", "%Y-%m-%d").date():
+                if bus_start>datetime.datetime.strptime("2013-01-01", "%Y-%m-%d").date():
+                    if bus_info['review_count']>20:
                 #need threshold for business age now
-                diff=abs(float(review['stars'])-float(bus_info['avg_stars_calc']))
-                diffs.append(diff)
-                ests.append(float(review['stars']))
-                actual.append(float(bus_info['avg_stars_calc']))
-                user_id=review['user_id']
-                if user_id in elite_ids:
-                    diffs_e.append(diff)
-                    ests_e.append(float(review['stars']))
-                    actual_e.append(float(bus_info['avg_stars_calc']))
-                if user_id in experts_b:
-                    diffs_ex_b.append(diff)
-                    ests_ex_b.append(float(review['stars']))
-                    actual_ex_b.append(float(bus_info['avg_stars_calc']))
-                if user_id in experts_a:
-                    diffs_ex_a.append(diff)
-                    ests_ex_a.append(float(review['stars']))
-                    actual_ex_a.append(float(bus_info['avg_stars_calc']))
+                        diff=abs(float(review['stars'])-float(bus_info['avg_stars_calc']))
+                        diffs.append(diff)
+                        rem=float(bus_info['avg_stars_calc'])%1
+                        if rem>.5:
+                            diffs_perf.append(1-rem)
+                        else:
+                            diffs_perf.append(rem)
+                        ests.append(float(review['stars']))
+                        actual.append(float(bus_info['avg_stars_calc']))
+                        user_id=review['user_id']
+                        if user_id in elite_ids:
+                            diffs_e.append(diff)
+                            ests_e.append(float(review['stars']))
+                            actual_e.append(float(bus_info['avg_stars_calc']))
+                        if user_id in experts_b:
+                            diffs_ex_b.append(diff)
+                            ests_ex_b.append(float(review['stars']))
+                            actual_ex_b.append(float(bus_info['avg_stars_calc']))
+                        if user_id in experts_a:
+                            diffs_ex_a.append(diff)
+                            ests_ex_a.append(float(review['stars']))
+                            actual_ex_a.append(float(bus_info['avg_stars_calc']))
 
             #print diff
             #print review['stars'],bus_info['stars'],bus_info['avg_stars_calc']
@@ -141,9 +149,15 @@ def main():
     print stats.ttest_ind(diffs_e,diffs_ex_b)
     print "Mean Error Population, Elite, Expert"
     print np.mean(diffs)
+    print "Count: " + str(len(diffs))
     print np.mean(diffs_e)
+    print "Count: " + str(len(diffs_e))
     print np.mean(diffs_ex_b)
+    print "Count: " + str(len(diffs_ex_b))
     print np.mean(diffs_ex_a)
+    print "Count: " + str(len(diffs_ex_a))
+    print np.mean(diffs_perf)
+    print "Count: " + str(len(diffs_perf))
     quit()
 
 ######## Interesting Stats  ############
