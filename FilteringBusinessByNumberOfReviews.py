@@ -12,7 +12,11 @@ client = MongoClient('Davids-MacBook-Air.local')
 db = client.yelp
 collection = db.reviews_rest
 
-cursor = collection.aggregate([{"$group": {"_id": "$business_id"}}])
+cursor = collection.aggregate([{"$group": {"_id": "$business_id","count":{"$sum":1}}}])
+print cursor
+quit()
+
+cursor=collection.aggregate([{"$sort": { "business_id": 1, "date": 1 }} ,{"$group": {"_id": "$business_id", "first_review":{ "$first": "$date" }}}],allowDiskUse=True)
 
 #print (cursor)
 threshold = 30

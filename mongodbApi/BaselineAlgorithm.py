@@ -2,11 +2,19 @@ from pymongo import MongoClient
 import networkx as nx
 import datetime
 import operator
+from datetime import timedelta
+client = MongoClient('Davids-MacBook-Air.local')
+db = client.yelp
 
-client = MongoClient('Karans-MacBook-Air.local')
+####### Load Business lookup #####
+business={}
+collection = db.business
+cursor = collection.find({"avg_stars_calc":{"$gt":0}})
+for bus in cursor:
+    business[bus['business_id']]=bus
 
 print "Begin",datetime.datetime.now()
-db = client.yelp
+
 collection = db.reviews_rest
 
 cursor = collection.find()              # This will hold all the reviews for restaurants
@@ -14,10 +22,14 @@ cursor = collection.find()              # This will hold all the reviews for res
 user_rest = nx.DiGraph()
 
 for review in cursor:
-    restId = str(review['business_id'])
-    userId = str(review['user_id'])
+    bus_info= business[review['business_id']]
+    bus_start=datetime.datetime.strptime(bus_info['first_review'], "%Y-%m-%d").date()
+    rev_date=datetime.datetime.strptime(review['date'], "%Y-%m-%d").date()
+    if bus_start+timedelta(days=180)>rev_date:
+        restId = str(review['business_id'])
+        userId = str(review['user_id'])
 
-    user_rest.add_edge(userId, restId)
+        user_rest.add_edge(userId, restId)
 
 
 hubs = {}
@@ -40,10 +52,10 @@ with open('baseline_Hubs.txt','w') as op:
 sorted_auths = sorted(hubs.items(), key=operator.itemgetter(1), reverse=True)
 print "Sorted auths length : ",len(sorted_auths)
 with open('baseline_Authorities.txt','w') as op1:
-    op1.write("Authorities")
+    #op1.write("Authorities\n")
     for auth in sorted_auths:
         if auth[1]>0:         # When v ==0, we actually have a hub here
-            op1.write(auth[0]+" : "+str(auth[1])+"\n")
+            op1.write(auth[0]+"\t"+str(auth[1])+"\n")
     op1.close()
 
 
@@ -60,13 +72,13 @@ def get_Accuracy():
 
     TP = 0
     FP = 0
-    Derived_Experts = sorted_auths[0:int((0.1*len(sorted_auths)))]
+    Derived_Experts = sorted_auths[0:int((0.01*len(sorted_auths)))]
     #Derived_Experts = sorted_auths[0:1000]
     Derived_Experts =[x[0] for x in Derived_Experts]
 
     print Derived_Experts.__len__()
     db = client.yelp
-    collection = db.users
+    collection = db.user
 
     cursor = collection.find().where("if (this.elite.length > 0){return this;}")              # This will hold all elite users
 
