@@ -14,9 +14,10 @@ start_dates={}
 for start in cursor:
     start_dates[start['_id']]=start['first_review']
 
+
 #access review database
 
-collection = db.reviews_test
+collection = db.reviews_rest
 #limit only for processing time during testing - remove before final run
 cursor=collection.find({})#.limit()
 reviews=[]
@@ -43,7 +44,7 @@ for idx,review in enumerate(reviews):
         last_rec=review_averages[-1][-1]
         review_averages[-1].append((review['business_id'],last_rec[1]+float(1),review['date']))
 
-print review_averages[0]
+
 
 # create monthly frequency from per review frequency
 business_ratings={}
@@ -73,7 +74,7 @@ for idx,bus in enumerate(review_averages):
                 break
 #write to file count,age
 thefile=open(dir+'counts_time.txt','w+')
-minlength=18
+minlength=6
 for bus in business_ratings:
     for month in business_ratings[bus]['ratings']:
         if len(business_ratings[bus]['ratings'])>minlength:

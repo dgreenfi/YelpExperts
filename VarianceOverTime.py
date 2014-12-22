@@ -23,7 +23,7 @@ reviews=[]
 for rev in cursor:
     reviews.append(rev)
 
-#sort by business id
+#sort by business id + date
 reviews.sort(key=lambda x: x['business_id']+x['date'])
 last_id=""
 #calculate averages first and store as "matrix"
